@@ -1,0 +1,20 @@
+{
+    "threshold": 0.1,
+    "accuracy": 0.8890170333569908,
+    "attack_precision": 0.9224666721190807,
+    "attack_recall": 0.8789059456089768,
+    "attack_f1_score": 0.9001596169193935,
+    "confusion_matrix": [
+        [
+            8763,
+            948
+        ],
+        [
+            1554,
+            11279
+        ]
+    ],
+    "number_of_trees": 100,
+    "random_state": 42,
+    "training_duration_seconds": 16.9929
+}

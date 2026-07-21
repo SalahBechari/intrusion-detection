@@ -1,0 +1,25 @@
+﻿venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.ipynb_checkpoints/
+
+.vscode/
+.idea/
+
+.env
+.env.*
+
+.DS_Store
+Thumbs.db
+
+*.log
+
+data/captures/*.pcap
+data/captures/*.pcapng
+
+!data/captures/test_capture.pcapng
+
+notebooks/remarque 1.txt

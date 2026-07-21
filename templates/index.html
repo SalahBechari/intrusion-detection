@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Intrusion Detection System</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='/styles.css') }}"
+    >
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div>
+                <p class="header-label">
+                    Machine Learning Security Platform
+                </p>
+
+                <h1>Intrusion Detection System</h1>
+
+                <p class="header-description">
+                    Analysez des connexions réseau, des fichiers CSV
+                    et des captures Wireshark afin d’identifier les
+                    activités potentiellement suspectes.
+                </p>
+            </div>
+
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                Modèle actif
+            </div>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        <section class="content-card manual-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">
+                        Prédiction individuelle
+                    </p>
+
+                    <h2>Analyser une seule connexion</h2>
+                </div>
+            </div>
+
+            <p class="section-description">
+                Renseignez les principales caractéristiques réseau
+                ou chargez un exemple complet provenant du dataset
+                NSL-KDD.
+            </p>
+
+            <form
+                id="manual-form"
+                class="manual-form"
+            >
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="duration">
+                            Durée
+                        </label>
+
+                        <input
+                            type="number"
+                            id="duration"
+                            name="duration"
+                            value="0"
+                            min="0"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="protocol_type">
+                            Protocole
+                        </label>
+
+                        <select
+                            id="protocol_type"
+                            name="protocol_type"
+                            required
+                        >
+                            <option value="tcp">TCP</option>
+                            <option value="udp">UDP</option>
+                            <option value="icmp">ICMP</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service">
+                            Service
+                        </label>
+
+                        <input
+                            type="text"
+                            id="service"
+                            name="service"
+                            value="http"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flag">
+                            État de connexion
+                        </label>
+
+                        <input
+                            type="text"
+                            id="flag"
+                            name="flag"
+                            value="SF"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="src_bytes">
+                            Octets source
+                        </label>
+
+                        <input
+                            type="number"
+                            id="src_bytes"
+                            name="src_bytes"
+                            value="181"
+                            min="0"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dst_bytes">
+                            Octets destination
+                        </label>
+
+                        <input
+                            type="number"
+                            id="dst_bytes"
+                            name="dst_bytes"
+                            value="5450"
+                            min="0"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="example-buttons">
+                    <button
+                        type="button"
+                        id="normal-example-button"
+                        class="example-button"
+                    >
+                        Charger un exemple normal
+                    </button>
+
+                    <button
+                        type="button"
+                        id="attack-example-button"
+                        class="example-button attack-example"
+                    >
+                        Charger un exemple d’attaque
+                    </button>
+                </div>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="manual-analyze-button"
+                >
+                    Analyser cette connexion
+                </button>
+            </form>
+
+            <div
+                id="manual-result"
+                class="manual-result hidden"
+            ></div>
+        </section>
+
+        <section class="content-card upload-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">
+                        Analyse de plusieurs connexions
+                    </p>
+
+                    <h2>Importer un fichier CSV</h2>
+                </div>
+            </div>
+
+            <p class="section-description">
+                Le fichier doit contenir les 41 caractéristiques
+                attendues par le modèle NSL-KDD.
+            </p>
+
+            <form id="upload-form">
+                <label
+                    for="csv-file"
+                    class="file-drop-zone"
+                    id="drop-zone"
+                >
+                    <span class="file-icon">
+                        CSV
+                    </span>
+
+                    <span
+                        class="file-title"
+                        id="csv-file-title"
+                    >
+                        Cliquez pour sélectionner un fichier
+                    </span>
+
+                    <span
+                        class="file-help"
+                        id="csv-file-help"
+                    >
+                        ou déposez votre fichier CSV ici
+                    </span>
+
+                    <input
+                        type="file"
+                        id="csv-file"
+                        accept=".csv"
+                        hidden
+                    >
+                </label>
+
+                <button
+                    type="submit"
+                    id="analyze-button"
+                    class="primary-button"
+                >
+                    Analyser les connexions
+                </button>
+            </form>
+
+            <div
+                id="message"
+                class="message hidden"
+            ></div>
+        </section>
+
+        <section class="content-card pcap-card">
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">
+                        Analyse réseau réelle
+                    </p>
+
+                    <h2>Analyser une capture Wireshark</h2>
+                </div>
+            </div>
+
+            <p class="section-description">
+                Importez un fichier PCAP ou PCAPNG pour afficher
+                les protocoles, les adresses IP, les ports et le
+                volume du trafic capturé.
+            </p>
+
+            <form id="pcap-form">
+                <label
+                    for="pcap-file"
+                    class="file-drop-zone"
+                    id="pcap-drop-zone"
+                >
+                    <span class="file-icon">
+                        PCAP
+                    </span>
+
+                    <span
+                        class="file-title"
+                        id="pcap-file-title"
+                    >
+                        Sélectionner une capture Wireshark
+                    </span>
+
+                    <span
+                        class="file-help"
+                        id="pcap-file-help"
+                    >
+                        Formats acceptés : .pcap et .pcapng
+                    </span>
+
+                    <input
+                        type="file"
+                        id="pcap-file"
+                        accept=".pcap,.pcapng"
+                        hidden
+                    >
+                </label>
+
+                <button
+                    type="submit"
+                    id="pcap-analyze-button"
+                    class="primary-button"
+                >
+                    Analyser la capture
+                </button>
+            </form>
+
+            <div
+                id="pcap-message"
+                class="message hidden"
+            ></div>
+
+            <div
+                id="pcap-results"
+                class="pcap-results hidden"
+            >
+                <div class="stats-grid">
+                    <article class="stat-card">
+                        <p>Nombre de paquets</p>
+
+                        <strong id="pcap-total-packets">
+                            0
+                        </strong>
+                    </article>
+
+                    <article class="stat-card">
+                        <p>Volume total</p>
+
+                        <strong id="pcap-total-volume">
+                            0 Mo
+                        </strong>
+                    </article>
+
+                    <article class="stat-card">
+                        <p>Protocoles détectés</p>
+
+                        <strong id="pcap-protocol-count">
+                            0
+                        </strong>
+                    </article>
+
+                    <article class="stat-card">
+                        <p>Ports observés</p>
+
+                        <strong id="pcap-port-count">
+                            0
+                        </strong>
+                    </article>
+                </div>
+
+                <section class="security-summary-card">
+                    <div class="security-summary-header">
+                        <div>
+                            <p class="section-label">
+                                Résumé descriptif
+                            </p>
+
+                            <h3>
+                                Évaluation de la capture réseau
+                            </h3>
+                        </div>
+
+                        <span
+                            id="pcap-attention-level"
+                            class="attention-badge attention-low"
+                        >
+                            Faible
+                        </span>
+                    </div>
+
+                    <div class="security-summary-grid">
+                        <article class="security-summary-item">
+                            <p>Protocole dominant</p>
+
+                            <strong id="pcap-dominant-protocol">
+                                -
+                            </strong>
+
+                            <span id="pcap-dominant-protocol-details">
+                                0 paquet
+                            </span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>IP source la plus active</p>
+
+                            <strong id="pcap-most-active-source">
+                                -
+                            </strong>
+
+                            <span id="pcap-most-active-source-details">
+                                0 paquet
+                            </span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>Port le plus utilisé</p>
+
+                            <strong id="pcap-most-used-port">
+                                -
+                            </strong>
+
+                            <span id="pcap-most-used-port-details">
+                                0 occurrence
+                            </span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>Trafic identifié comme chiffré</p>
+
+                            <strong id="pcap-encrypted-percentage">
+                                0 %
+                            </strong>
+
+                            <span id="pcap-encrypted-packets">
+                                0 paquet
+                            </span>
+                        </article>
+                    </div>
+
+                    <div class="security-indicators">
+                        <h4>Indicateurs détectés</h4>
+
+                        <ul id="pcap-security-indicators"></ul>
+                    </div>
+
+                    <p
+                        id="pcap-security-warning"
+                        class="security-warning"
+                    ></p>
+                </section>
+
+                <div class="pcap-charts-grid">
+                    <article class="pcap-chart-card">
+                        <div class="pcap-chart-header">
+                            <div>
+                                <p class="section-label">
+                                    Visualisation
+                                </p>
+
+                                <h3>
+                                    Répartition des protocoles
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="pcap-chart-wrapper">
+                            <canvas id="protocols-chart"></canvas>
+                        </div>
+                    </article>
+
+                    <article class="pcap-chart-card">
+                        <div class="pcap-chart-header">
+                            <div>
+                                <p class="section-label">
+                                    Visualisation
+                                </p>
+
+                                <h3>
+                                    Ports les plus utilisés
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="pcap-chart-wrapper">
+                            <canvas id="ports-chart"></canvas>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="download-card">
+                    <p class="section-label">
+                        Exportation
+                    </p>
+
+                    <h2>Télécharger l’analyse PCAP</h2>
+
+                    <p>
+                        Exportez les statistiques, les protocoles,
+                        les ports et les principales adresses IP
+                        au format CSV.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="pcap-download-button"
+                        class="secondary-button"
+                        disabled
+                    >
+                        Télécharger l’analyse PCAP
+                    </button>
+                </div>
+
+                <div class="pcap-grid">
+                    <article class="pcap-table-card">
+                        <h3>Protocoles</h3>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Protocole</th>
+                                        <th>Paquets</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="pcap-protocols-body"></tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="pcap-table-card">
+                        <h3>Ports principaux</h3>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Port</th>
+                                        <th>Occurrences</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="pcap-ports-body"></tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="pcap-table-card">
+                        <h3>Principales IP sources</h3>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Adresse IP</th>
+                                        <th>Paquets</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="pcap-source-ips-body"></tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="pcap-table-card">
+                        <h3>Principales IP destinations</h3>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Adresse IP</th>
+                                        <th>Paquets</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="pcap-destination-ips-body"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section
+            id="results-section"
+            class="results-section hidden"
+        >
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">
+                        Résultats
+                    </p>
+
+                    <h2>Résumé de l’analyse CSV</h2>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <p>Total des connexions</p>
+
+                    <strong id="total-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card normal-card">
+                    <p>Connexions normales</p>
+
+                    <strong id="normal-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card attack-card">
+                    <p>Attaques détectées</p>
+
+                    <strong id="attack-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card">
+                    <p>Taux d’attaque</p>
+
+                    <strong id="attack-rate">
+                        0 %
+                    </strong>
+                </article>
+            </div>
+
+            <div class="results-tools">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <p class="section-label">
+                                Visualisation
+                            </p>
+
+                            <h2>
+                                Répartition des connexions
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span>
+                                    Connexions normales
+                                </span>
+
+                                <strong id="normal-chart-value">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    id="normal-chart-bar"
+                                    class="chart-bar normal-bar"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span>
+                                    Attaques détectées
+                                </span>
+
+                                <strong id="attack-chart-value">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    id="attack-chart-bar"
+                                    class="chart-bar attack-bar"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="download-card">
+                    <p class="section-label">
+                        Exportation
+                    </p>
+
+                    <h2>Télécharger les résultats</h2>
+
+                    <p>
+                        Exportez les prédictions, les probabilités
+                        et les niveaux de risque au format CSV.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="download-button"
+                        class="secondary-button"
+                        disabled
+                    >
+                        Télécharger le fichier CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <p class="section-label">
+                            Détails
+                        </p>
+
+                        <h2>
+                            Prédictions par connexion
+                        </h2>
+                    </div>
+
+                    <input
+                        type="search"
+                        id="search-input"
+                        placeholder="Rechercher une ligne..."
+                    >
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ligne</th>
+                                <th>Prédiction</th>
+                                <th>Probabilité d’attaque</th>
+                                <th>Niveau de risque</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="results-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
+    <script
+        src="{{ url_for('static', path='/app.js') }}"
+    ></script>
+</body>
+</html>
