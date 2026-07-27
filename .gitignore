@@ -47,3 +47,5 @@ templates/index_before_cicids.html
 # Fichiers système
 .DS_Store
 Thumbs.db
+src/pcap_ml_analyzer_before_docker.py
+templates/index_before_reorder.html

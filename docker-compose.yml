@@ -1,0 +1,18 @@
+﻿services:
+  intrusion-detection:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: intrusion-detection-app
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      CICFLOWMETER_DIRECTORY: /opt/CICFlowMeter
+      TSHARK_PATH: /usr/bin/tshark
+      CICIDS_MODEL_PATH: /app/models/cicids_intrusion_detector.joblib
+      JNETPCAP_DIRECTORY: /opt/CICFlowMeter/jnetpcap/linux/jnetpcap-1.4.r1425
+
+    restart: unless-stopped

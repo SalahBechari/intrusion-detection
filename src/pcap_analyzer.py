@@ -3,14 +3,24 @@ from __future__ import annotations
 import csv
 import subprocess
 from collections import Counter
+import os
 from pathlib import Path
 from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-TSHARK_PATH = Path(
+DEFAULT_TSHARK_PATH = (
     r"C:\Program Files\Wireshark\tshark.exe"
+    if os.name == "nt"
+    else "/usr/bin/tshark"
+)
+
+TSHARK_PATH = Path(
+    os.getenv(
+        "TSHARK_PATH",
+        DEFAULT_TSHARK_PATH,
+    )
 )
 
 ENCRYPTED_PROTOCOLS = {
@@ -287,7 +297,7 @@ def analyze_pcap(
         "-e",
         "frame.len",
         "-e",
-        "_ws.col.protocol",
+        "_ws.col.Protocol",
         "-e",
         "ip.src",
         "-e",
@@ -346,7 +356,7 @@ def analyze_pcap(
     for row in rows:
         protocol = (
             row.get(
-                "_ws.col.protocol",
+                "_ws.col.Protocol",
                 "",
             ).strip()
             or "UNKNOWN"
