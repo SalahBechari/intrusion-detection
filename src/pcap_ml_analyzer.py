@@ -14,23 +14,50 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-MODEL_PATH = (
-    PROJECT_ROOT
-    / "models"
-    / "cicids_intrusion_detector.joblib"
+MODEL_PATH = Path(
+    os.getenv(
+        "CICIDS_MODEL_PATH",
+        str(
+            PROJECT_ROOT
+            / "models"
+            / "cicids_intrusion_detector.joblib"
+        ),
+    )
+)
+
+DEFAULT_CICFLOWMETER_DIRECTORY = (
+    r"C:\Users\salah\Desktop\CICFlowMeter"
+    if os.name == "nt"
+    else "/opt/CICFlowMeter"
 )
 
 CICFLOWMETER_DIRECTORY = Path(
-    r"C:\Users\salah\Desktop\CICFlowMeter"
+    os.getenv(
+        "CICFLOWMETER_DIRECTORY",
+        DEFAULT_CICFLOWMETER_DIRECTORY,
+    )
 )
 
 GRADLE_WRAPPER = (
     CICFLOWMETER_DIRECTORY
-    / "gradlew.bat"
+    / (
+        "gradlew.bat"
+        if os.name == "nt"
+        else "gradlew"
+    )
+)
+
+DEFAULT_TSHARK_PATH = (
+    r"C:\Program Files\Wireshark\tshark.exe"
+    if os.name == "nt"
+    else "/usr/bin/tshark"
 )
 
 TSHARK_PATH = Path(
-    r"C:\Program Files\Wireshark\tshark.exe"
+    os.getenv(
+        "TSHARK_PATH",
+        DEFAULT_TSHARK_PATH,
+    )
 )
 
 
@@ -166,16 +193,39 @@ def generate_flow_csv(
         f"-PflowOutput={output_directory}",
     ]
 
-    jnetpcap_directory = (
-        CICFLOWMETER_DIRECTORY
-        / "jnetpcap"
-        / "win"
-        / "jnetpcap-1.4.r1425"
-    )
+    if os.name == "nt":
+        jnetpcap_directory = Path(
+            os.getenv(
+                "JNETPCAP_DIRECTORY",
+                str(
+                    CICFLOWMETER_DIRECTORY
+                    / "jnetpcap"
+                    / "win"
+                    / "jnetpcap-1.4.r1425"
+                ),
+            )
+        )
 
-    npcap_directory = Path(
-        r"C:\Windows\System32\Npcap"
-    )
+        npcap_directory = Path(
+            os.getenv(
+                "NPCAP_DIRECTORY",
+                r"C:\Windows\System32\Npcap",
+            )
+        )
+    else:
+        jnetpcap_directory = Path(
+            os.getenv(
+                "JNETPCAP_DIRECTORY",
+                str(
+                    CICFLOWMETER_DIRECTORY
+                    / "jnetpcap"
+                    / "linux"
+                    / "jnetpcap-1.4.r1425"
+                ),
+            )
+        )
+
+        npcap_directory = None
 
     if not jnetpcap_directory.exists():
         raise FileNotFoundError(
@@ -183,7 +233,10 @@ def generate_flow_csv(
             f"{jnetpcap_directory}"
         )
 
-    if not npcap_directory.exists():
+    if (
+        npcap_directory is not None
+        and not npcap_directory.exists()
+    ):
         raise FileNotFoundError(
             f"Le dossier Npcap est introuvable : {npcap_directory}"
         )
@@ -195,13 +248,35 @@ def generate_flow_csv(
         "",
     )
 
-    environment["PATH"] = os.pathsep.join(
-        [
-            str(jnetpcap_directory),
-            str(npcap_directory),
-            existing_path,
-        ]
+    path_entries = [
+        str(jnetpcap_directory),
+    ]
+
+    if npcap_directory is not None:
+        path_entries.append(
+            str(npcap_directory)
+        )
+
+    path_entries.append(
+        existing_path
     )
+
+    environment["PATH"] = os.pathsep.join(
+        path_entries
+    )
+
+    if os.name != "nt":
+        existing_library_path = environment.get(
+            "LD_LIBRARY_PATH",
+            "",
+        )
+
+        environment["LD_LIBRARY_PATH"] = os.pathsep.join(
+            [
+                str(jnetpcap_directory),
+                existing_library_path,
+            ]
+        )
 
     try:
         result = subprocess.run(

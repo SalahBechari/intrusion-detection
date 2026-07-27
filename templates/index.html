@@ -249,7 +249,169 @@
             ></div>
         </section>
 
-        <section class="content-card pcap-card">
+        <section
+            id="results-section"
+            class="results-section hidden"
+        >
+            <div class="section-heading">
+                <div>
+                    <p class="section-label">
+                        Résultats
+                    </p>
+
+                    <h2>Résumé de l’analyse CSV</h2>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <p>Total des connexions</p>
+
+                    <strong id="total-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card normal-card">
+                    <p>Connexions normales</p>
+
+                    <strong id="normal-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card attack-card">
+                    <p>Attaques détectées</p>
+
+                    <strong id="attack-connections">
+                        0
+                    </strong>
+                </article>
+
+                <article class="stat-card">
+                    <p>Taux d’attaque</p>
+
+                    <strong id="attack-rate">
+                        0 %
+                    </strong>
+                </article>
+            </div>
+
+            <div class="results-tools">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <p class="section-label">
+                                Visualisation
+                            </p>
+
+                            <h2>
+                                Répartition des connexions
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span>
+                                    Connexions normales
+                                </span>
+
+                                <strong id="normal-chart-value">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    id="normal-chart-bar"
+                                    class="chart-bar normal-bar"
+                                ></div>
+                            </div>
+                        </div>
+
+                        <div class="chart-row">
+                            <div class="chart-label">
+                                <span>
+                                    Attaques détectées
+                                </span>
+
+                                <strong id="attack-chart-value">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="chart-track">
+                                <div
+                                    id="attack-chart-bar"
+                                    class="chart-bar attack-bar"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="download-card">
+                    <p class="section-label">
+                        Exportation
+                    </p>
+
+                    <h2>Télécharger les résultats</h2>
+
+                    <p>
+                        Exportez les prédictions, les probabilités
+                        et les niveaux de risque au format CSV.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="download-button"
+                        class="secondary-button"
+                        disabled
+                    >
+                        Télécharger le fichier CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <p class="section-label">
+                            Détails
+                        </p>
+
+                        <h2>
+                            Prédictions par connexion
+                        </h2>
+                    </div>
+
+                    <input
+                        type="search"
+                        id="search-input"
+                        placeholder="Rechercher une ligne..."
+                    >
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ligne</th>
+                                <th>Prédiction</th>
+                                <th>Probabilité d’attaque</th>
+                                <th>Niveau de risque</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="results-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+<section class="content-card pcap-card">
             <div class="section-heading">
                 <div>
                     <p class="section-label">
@@ -692,167 +854,7 @@
             </div>
         </section>
 
-        <section
-            id="results-section"
-            class="results-section hidden"
-        >
-            <div class="section-heading">
-                <div>
-                    <p class="section-label">
-                        Résultats
-                    </p>
-
-                    <h2>Résumé de l’analyse CSV</h2>
-                </div>
-            </div>
-
-            <div class="stats-grid">
-                <article class="stat-card">
-                    <p>Total des connexions</p>
-
-                    <strong id="total-connections">
-                        0
-                    </strong>
-                </article>
-
-                <article class="stat-card normal-card">
-                    <p>Connexions normales</p>
-
-                    <strong id="normal-connections">
-                        0
-                    </strong>
-                </article>
-
-                <article class="stat-card attack-card">
-                    <p>Attaques détectées</p>
-
-                    <strong id="attack-connections">
-                        0
-                    </strong>
-                </article>
-
-                <article class="stat-card">
-                    <p>Taux d’attaque</p>
-
-                    <strong id="attack-rate">
-                        0 %
-                    </strong>
-                </article>
-            </div>
-
-            <div class="results-tools">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div>
-                            <p class="section-label">
-                                Visualisation
-                            </p>
-
-                            <h2>
-                                Répartition des connexions
-                            </h2>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-row">
-                            <div class="chart-label">
-                                <span>
-                                    Connexions normales
-                                </span>
-
-                                <strong id="normal-chart-value">
-                                    0
-                                </strong>
-                            </div>
-
-                            <div class="chart-track">
-                                <div
-                                    id="normal-chart-bar"
-                                    class="chart-bar normal-bar"
-                                ></div>
-                            </div>
-                        </div>
-
-                        <div class="chart-row">
-                            <div class="chart-label">
-                                <span>
-                                    Attaques détectées
-                                </span>
-
-                                <strong id="attack-chart-value">
-                                    0
-                                </strong>
-                            </div>
-
-                            <div class="chart-track">
-                                <div
-                                    id="attack-chart-bar"
-                                    class="chart-bar attack-bar"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="download-card">
-                    <p class="section-label">
-                        Exportation
-                    </p>
-
-                    <h2>Télécharger les résultats</h2>
-
-                    <p>
-                        Exportez les prédictions, les probabilités
-                        et les niveaux de risque au format CSV.
-                    </p>
-
-                    <button
-                        type="button"
-                        id="download-button"
-                        class="secondary-button"
-                        disabled
-                    >
-                        Télécharger le fichier CSV
-                    </button>
-                </div>
-            </div>
-
-            <div class="table-card">
-                <div class="table-header">
-                    <div>
-                        <p class="section-label">
-                            Détails
-                        </p>
-
-                        <h2>
-                            Prédictions par connexion
-                        </h2>
-                    </div>
-
-                    <input
-                        type="search"
-                        id="search-input"
-                        placeholder="Rechercher une ligne..."
-                    >
-                </div>
-
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ligne</th>
-                                <th>Prédiction</th>
-                                <th>Probabilité d’attaque</th>
-                                <th>Niveau de risque</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="results-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+        
     </main>
 
     <script
