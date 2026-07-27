@@ -868,3 +868,92 @@ tbody tr:hover {
         height: 290px !important;
     }
 }
+.pcap-ml-card {
+    margin-top: 22px;
+    padding: 26px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f3f8fd
+        );
+}
+
+.pcap-ml-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.pcap-ml-header h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.35rem;
+    line-height: 1.3;
+}
+
+.ml-result-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 140px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+
+.ml-result-normal {
+    border: 1px solid #bfe5d6;
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.ml-result-attack {
+    border: 1px solid #f0c3ca;
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.pcap-ml-stats {
+    margin-top: 22px;
+}
+
+.pcap-ml-table-card {
+    margin-top: 22px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+}
+
+.pcap-ml-table-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.pcap-ml-table-header h3 {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.15rem;
+}
+
+@media (max-width: 720px) {
+    .pcap-ml-card {
+        padding: 20px;
+    }
+
+    .pcap-ml-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

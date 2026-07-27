@@ -23,3 +23,27 @@ data/captures/*.pcapng
 !data/captures/test_capture.pcapng
 
 notebooks/remarque 1.txt
+
+# Environnement Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Datasets lourds et fichiers générés
+data/cicids2017/
+data/flows/
+
+# Résultats temporaires d'analyse
+reports/test_capture_predictions.csv
+reports/test_capture_summary.json
+
+# Sauvegardes locales
+src/api_before_cicids.py
+static/app_before_cicids.js
+static/styles_before_cicids.css
+templates/index_before_cicids.html
+
+# Fichiers système
+.DS_Store
+Thumbs.db

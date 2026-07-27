@@ -350,6 +350,133 @@
                     </article>
                 </div>
 
+                <section
+                    id="pcap-ml-section"
+                    class="pcap-ml-card hidden"
+                >
+                    <div class="pcap-ml-header">
+                        <div>
+                            <p class="section-label">
+                                Classification Machine Learning
+                            </p>
+
+                            <h3>
+                                D&eacute;tection d&rsquo;intrusions avec CICIDS2017
+                            </h3>
+                        </div>
+
+                        <span
+                            id="pcap-ml-result"
+                            class="ml-result-badge ml-result-normal"
+                        >
+                            Trafic normal
+                        </span>
+                    </div>
+
+                    <div class="stats-grid pcap-ml-stats">
+                        <article class="stat-card">
+                            <p>Nombre total de flux</p>
+                            <strong id="pcap-ml-total-flows">0</strong>
+                        </article>
+
+                        <article class="stat-card normal-card">
+                            <p>Flux normaux</p>
+                            <strong id="pcap-ml-normal-flows">0</strong>
+                        </article>
+
+                        <article class="stat-card attack-card">
+                            <p>Flux suspects</p>
+                            <strong id="pcap-ml-attack-flows">0</strong>
+                        </article>
+
+                        <article class="stat-card">
+                            <p>Pourcentage suspect</p>
+                            <strong id="pcap-ml-attack-percentage">0 %</strong>
+                        </article>
+                    </div>
+
+                    <div class="security-summary-grid">
+                        <article class="security-summary-item">
+                            <p>Probabilit&eacute; maximale</p>
+
+                            <strong id="pcap-ml-max-probability">
+                                0 %
+                            </strong>
+
+                            <span>
+                                Flux pr&eacute;sentant le score le plus &eacute;lev&eacute;
+                            </span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>Probabilit&eacute; moyenne</p>
+
+                            <strong id="pcap-ml-average-probability">
+                                0 %
+                            </strong>
+
+                            <span>
+                                Moyenne sur l&rsquo;ensemble des flux
+                            </span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>Mod&egrave;le utilis&eacute;</p>
+
+                            <strong id="pcap-ml-model">
+                                CICIDS2017 Random Forest
+                            </strong>
+
+                            <span>Random Forest</span>
+                        </article>
+
+                        <article class="security-summary-item">
+                            <p>Type d&rsquo;analyse</p>
+
+                            <strong>
+                                Pr&eacute;dictive
+                            </strong>
+
+                            <span>
+                                Classification Normal / Attaque
+                            </span>
+                        </article>
+                    </div>
+
+                    <div class="pcap-ml-table-card">
+                        <div class="pcap-ml-table-header">
+                            <div>
+                                <p class="section-label">
+                                    Flux &agrave; surveiller
+                                </p>
+
+                                <h3>
+                                    Flux ayant les probabilit&eacute;s les plus &eacute;lev&eacute;es
+                                </h3>
+                            </div>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Ligne</th>
+                                        <th>IP source</th>
+                                        <th>Port source</th>
+                                        <th>IP destination</th>
+                                        <th>Port destination</th>
+                                        <th>Protocole</th>
+                                        <th>Pr&eacute;diction</th>
+                                        <th>Probabilit&eacute;</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="pcap-ml-flows-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="security-summary-card">
                     <div class="security-summary-header">
                         <div>

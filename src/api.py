@@ -18,6 +18,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, ConfigDict
 
 from src.pcap_analyzer import analyze_pcap
+from src.pcap_ml_analyzer import analyze_pcap_with_ml
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -493,7 +494,16 @@ async def analyze_pcap_file(
             temporary_path
         )
 
+        machine_learning_analysis = (
+            analyze_pcap_with_ml(
+                temporary_path
+            )
+        )
+
         analysis["filename"] = original_filename
+        analysis["machine_learning"] = (
+            machine_learning_analysis
+        )
 
         return analysis
 

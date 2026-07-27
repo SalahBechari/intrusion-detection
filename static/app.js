@@ -51,6 +51,37 @@ const pcapProtocolCount = document.getElementById(
 const pcapPortCount = document.getElementById(
     "pcap-port-count"
 );
+
+const pcapMlSection = document.getElementById(
+    "pcap-ml-section"
+);
+const pcapMlResult = document.getElementById(
+    "pcap-ml-result"
+);
+const pcapMlTotalFlows = document.getElementById(
+    "pcap-ml-total-flows"
+);
+const pcapMlNormalFlows = document.getElementById(
+    "pcap-ml-normal-flows"
+);
+const pcapMlAttackFlows = document.getElementById(
+    "pcap-ml-attack-flows"
+);
+const pcapMlAttackPercentage = document.getElementById(
+    "pcap-ml-attack-percentage"
+);
+const pcapMlMaxProbability = document.getElementById(
+    "pcap-ml-max-probability"
+);
+const pcapMlAverageProbability = document.getElementById(
+    "pcap-ml-average-probability"
+);
+const pcapMlModel = document.getElementById(
+    "pcap-ml-model"
+);
+const pcapMlFlowsBody = document.getElementById(
+    "pcap-ml-flows-body"
+);
 const pcapProtocolsBody = document.getElementById(
     "pcap-protocols-body"
 );
@@ -934,6 +965,10 @@ function displayPcapResults(data) {
         data.security_summary
     );
 
+    renderMachineLearningResults(
+        data.machine_learning
+    );
+
     renderPcapTable(
         pcapProtocolsBody,
         data.protocols,
@@ -977,6 +1012,113 @@ function displayPcapResults(data) {
     pcapResults.scrollIntoView({
         behavior: "smooth",
         block: "start"
+    });
+}
+
+function renderMachineLearningResults(analysis) {
+    if (!analysis) {
+        pcapMlSection.classList.add("hidden");
+        return;
+    }
+
+    pcapMlTotalFlows.textContent =
+        Number(
+            analysis.total_flows
+        ).toLocaleString("fr-FR");
+
+    pcapMlNormalFlows.textContent =
+        Number(
+            analysis.normal_flows
+        ).toLocaleString("fr-FR");
+
+    pcapMlAttackFlows.textContent =
+        Number(
+            analysis.attack_flows
+        ).toLocaleString("fr-FR");
+
+    pcapMlAttackPercentage.textContent =
+        `${Number(
+            analysis.attack_percentage
+        ).toFixed(2)} %`;
+
+    pcapMlMaxProbability.textContent =
+        `${(
+            Number(
+                analysis.maximum_attack_probability
+            ) * 100
+        ).toFixed(2)} %`;
+
+    pcapMlAverageProbability.textContent =
+        `${(
+            Number(
+                analysis.average_attack_probability
+            ) * 100
+        ).toFixed(2)} %`;
+
+    pcapMlModel.textContent =
+        analysis.model || "CICIDS2017 Random Forest";
+
+    pcapMlResult.textContent =
+        analysis.global_result;
+
+    const attackDetected =
+        Number(analysis.attack_flows) > 0;
+
+    pcapMlResult.className =
+        attackDetected
+            ? "ml-result-badge ml-result-attack"
+            : "ml-result-badge ml-result-normal";
+
+    renderMachineLearningFlows(
+        analysis.top_suspicious_flows || []
+    );
+
+    pcapMlSection.classList.remove("hidden");
+}
+
+function renderMachineLearningFlows(flows) {
+    pcapMlFlowsBody.innerHTML = "";
+
+    if (!flows || flows.length === 0) {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td colspan="8">
+                Aucun flux disponible.
+            </td>
+        `;
+
+        pcapMlFlowsBody.appendChild(row);
+        return;
+    }
+
+    flows.forEach((flow) => {
+        const row = document.createElement("tr");
+
+        const badgeClass =
+            flow.prediction === "Attaque"
+                ? "badge-attack"
+                : "badge-normal";
+
+        const probability =
+            Number(flow.attack_probability) * 100;
+
+        row.innerHTML = `
+            <td>${flow.row_number}</td>
+            <td>${flow.source_ip || "-"}</td>
+            <td>${flow.source_port || "-"}</td>
+            <td>${flow.destination_ip || "-"}</td>
+            <td>${flow.destination_port || "-"}</td>
+            <td>${flow.protocol || "-"}</td>
+            <td>
+                <span class="badge ${badgeClass}">
+                    ${flow.prediction}
+                </span>
+            </td>
+            <td>${probability.toFixed(2)} %</td>
+        `;
+
+        pcapMlFlowsBody.appendChild(row);
     });
 }
 
@@ -1368,6 +1510,72 @@ function createPcapAnalysisCsv(data) {
             data.top_ports.length
         ]
     ];
+
+    if (data.machine_learning) {
+        const ml =
+            data.machine_learning;
+
+        rows.push(
+            [
+                "machine_learning",
+                "modele",
+                ml.model
+            ],
+            [
+                "machine_learning",
+                "resultat_global",
+                ml.global_result
+            ],
+            [
+                "machine_learning",
+                "nombre_total_flux",
+                ml.total_flows
+            ],
+            [
+                "machine_learning",
+                "flux_normaux",
+                ml.normal_flows
+            ],
+            [
+                "machine_learning",
+                "flux_suspects",
+                ml.attack_flows
+            ],
+            [
+                "machine_learning",
+                "pourcentage_suspect",
+                ml.attack_percentage
+            ],
+            [
+                "machine_learning",
+                "probabilite_maximale",
+                ml.maximum_attack_probability
+            ],
+            [
+                "machine_learning",
+                "probabilite_moyenne",
+                ml.average_attack_probability
+            ]
+        );
+
+        (
+            ml.top_suspicious_flows || []
+        ).forEach((flow) => {
+            rows.push([
+                "flux_machine_learning",
+                `ligne_${flow.row_number}`,
+                [
+                    flow.source_ip,
+                    flow.source_port,
+                    flow.destination_ip,
+                    flow.destination_port,
+                    flow.protocol,
+                    flow.prediction,
+                    flow.attack_probability
+                ].join(" | ")
+            ]);
+        });
+    }
 
     if (data.security_summary) {
         const summary =
